@@ -26,6 +26,8 @@ Overflow.Scrollable = Class.create({
     },
     
     setup: function() {
+        if (this.element.scrollHeight - this.element.getHeight() <= 0) return;
+        
         // setup wrapper element (needed so that scrollbar can be positioned relatively)
         this.setupWrapper();
         this.setupScrollBar();
