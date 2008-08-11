@@ -26,8 +26,6 @@ Overflow.Scrollable = Class.create({
     },
     
     setup: function() {
-        if (this.element.scrollHeight - this.element.getHeight() <= 0) return;
-        
         // setup wrapper element (needed so that scrollbar can be positioned relatively)
         this.setupWrapper();
         this.setupScrollBar();
@@ -50,17 +48,39 @@ Overflow.Scrollable = Class.create({
         };
         
         this.updateScrollWidget();
+        
+        if (this.parent.options.zoomable) {
+            this.wrapper.style.display = "none";
+        }
     },
     
     setupWrapper: function() {
         this.wrapper = new Element("div");
         
+        if (this.parent.options.zoomable) {
+            this.wrapper.id = this.element.id;
+            this.element.id = null;
+            this.element.style.display = "block";
+            
+            for (var p in this.element.getStyles()) {
+                if (p.indexOf("background") != -1 || p.indexOf("border") != -1) {
+                    var styles = {}; styles[p] = this.element.getStyle(p);
+                    var removeStyles = {}; removeStyles[p] = "0px";
+                
+                    if (p != "backgroundPosition") {
+                        this.wrapper.setStyle(styles);
+                        this.element.setStyle(removeStyles);
+                    }
+                }
+            }
+        }
+
         this.wrapper.setStyle({
             position: "relative",
             width: this.element.getWidth() + "px",
             height: this.element.getHeight() + "px"
         });
-        
+                
         // use the correct margins for wrapper and remove them from the element
         for (var p in this.element.getStyles()) {
             if (p.indexOf("margin") != -1) {
@@ -88,6 +108,16 @@ Overflow.Scrollable = Class.create({
 
         this.scrollBar.appendChild(this.scrollWidget);
         this.wrapper.appendChild(this.scrollBar);
+        
+        if (this.element.scrollHeight - this.element.getHeight() <= 0) {
+            this.scrollBar.hide();
+        } else {
+            ["paddingLeft", "paddingRight", "paddingTop", "paddingBottom"].each(function (p) {
+                this.element.style[p] = parseInt(this.element.getStyle(p)) + this.parent.options.padding[p.substring(7).toLowerCase()] + "px";            
+            }.bind(this));
+            
+            this.element.style.width = parseInt(this.element.getStyle("width")) - this.parent.options.padding.right - this.parent.options.padding.left + "px";
+        }
         
         // obtain the page to whole scrollable area ratio
         this.pageRatio = this.element.getHeight() / this.element.scrollHeight;
@@ -217,8 +247,12 @@ Overflow.DefaultOptions = {
     scrollBar: null,
     scrollWidget: null,
     widgetOffsets: { top: 0, bottom: 0 },
+    scrollBarPadding: { top: 0, bottom: 0 },
     scrollWheelSensitivity: 10,
-    keyScrollAmount: 20
+    padding: { top: 0, bottom: 0, left: 0, right: 0 },
+    keyScrollAmount: 20,
+    // used to integrate with HTML zoomer
+    zoomable: true  
 };
 
 // if scrollbar height is set, then use that
