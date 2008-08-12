@@ -63,18 +63,25 @@ Overflow.Scrollable = Class.create({
             this.wrapper.id = this.element.id;
             this.element.id = null;
             this.element.style.display = "block";
+
+            var styles = ["background", "backgroundColor", "backgroundImage", "backgroundRepeat", "backgroundPosition",
+                          "border", "borderBottom", "borderBottomColor", "borderBottomStyle", "borderBottomWidth",
+                          "borderColor", "borderLeft", "borderLeftColor", "borderLeftStyle", "borderLeftWidth",
+                          "borderRight", "borderRightColor", "borderRightStyle", "borderRightWidth",
+                          "borderTop", "borderTopColor", "borderTopStyle", "borderTopWidth"];
             
-            for (var p in this.element.getStyles()) {
-                if (p.indexOf("background") != -1 || p.indexOf("border") != -1) {
-                    var styles = {}; styles[p] = this.element.getStyle(p);
-                    var removeStyles = {}; removeStyles[p] = "0px";
+            styles.each(function(style) {
+                var value = this.element.getStyle(style);
                 
-                    if (p != "backgroundPosition") {
-                        this.wrapper.setStyle(styles);
-                        this.element.setStyle(removeStyles);
-                    }
+                if (value != null && value != "") {
+                    this.wrapper.style[style] = value;
                 }
-            }
+            }.bind(this));
+            
+            this.element.setStyle({
+                background: "none",
+                border: "none"
+            });
         }
 
         this.wrapper.setStyle({
