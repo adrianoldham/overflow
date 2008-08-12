@@ -52,6 +52,8 @@ Overflow.Scrollable = Class.create({
         if (this.parent.options.zoomable) {
             this.wrapper.style.display = "none";
         }
+        
+        this.setupButtons();
     },
     
     setupWrapper: function() {
@@ -96,6 +98,20 @@ Overflow.Scrollable = Class.create({
         this.wrapper.appendChild(this.element);
         
         this.element.setStyle({ overflow: "hidden" });
+    },
+    
+    setupButtons: function() {
+        this.upButton = this.scrollBar.getElementsBySelector("." + this.parent.options.upButtonClass).first();
+        this.downButton = this.scrollBar.getElementsBySelector("." + this.parent.options.downButtonClass).first();
+        
+        this.upButton.observe("mousedown", this.keyScrollStart.bindAsEventListener(this));
+        this.upButton.observe("mouseup", this.keyScrollStop.bindAsEventListener(this));
+        
+        this.downButton.observe("mousedown", this.keyScrollStart.bindAsEventListener(this));
+        this.downButton.observe("mouseup", this.keyScrollStop.bindAsEventListener(this));
+        
+        this.upButton.style.cursor = "pointer";
+        this.downButton.style.cursor = "pointer";
     },
     
     setupScrollBar: function() {
@@ -156,6 +172,8 @@ Overflow.Scrollable = Class.create({
     },
     
     scrollBarClick: function(event) {
+        if (event.target != this.scrollBar) return;
+        
         var widgetY = this.scrollWidget.cumulativeOffset()[1];
         
         // if clicked on scroll widget, then ignore
@@ -213,9 +231,9 @@ Overflow.Scrollable = Class.create({
     },
     
     keyScrollStart: function(event) {
-        if (event.keyCode == 38 || event.keyCode == 40) {
+        if (event.keyCode == 38 || event.keyCode == 40 || event.target == this.upButton || event.target == this.downButton) {
             this.keyScrollAmount = this.parent.options.keyScrollAmount;
-            this.keyScrollAmount = (event.keyCode == 40) ? this.keyScrollAmount : -this.keyScrollAmount;
+            this.keyScrollAmount = (event.keyCode == 40 || event.target == this.downButton) ? this.keyScrollAmount : -this.keyScrollAmount;
 
             this.keyScrollUpdate();
             
@@ -228,7 +246,7 @@ Overflow.Scrollable = Class.create({
     },
     
     keyScrollStop: function(event) {
-        if (event.keyCode == 38 || event.keyCode == 40) {
+        if (event.keyCode == 38 || event.keyCode == 40 || event.target == this.upButton || event.target == this.downButton) {
             if (this.keyScrollUpdater) this.keyScrollUpdater.stop();
             this.keyScrollAmount = 0;
         }
@@ -251,8 +269,10 @@ Overflow.DefaultOptions = {
     scrollWheelSensitivity: 10,
     padding: { top: 0, bottom: 0, left: 0, right: 0 },
     keyScrollAmount: 20,
+    upButtonClass: "up-button",
+    downButtonClass: "down-button",
     // used to integrate with HTML zoomer
-    zoomable: false  
+    zoomable: false
 };
 
 // if scrollbar height is set, then use that
