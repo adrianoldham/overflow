@@ -252,7 +252,7 @@ Overflow.DefaultOptions = {
     padding: { top: 0, bottom: 0, left: 0, right: 0 },
     keyScrollAmount: 20,
     // used to integrate with HTML zoomer
-    zoomable: true  
+    zoomable: false  
 };
 
 // if scrollbar height is set, then use that
