@@ -54,9 +54,25 @@ Overflow.Scrollable = Class.create({
         }
         
         this.setupButtons();
+        
+        this.hiddenElements.each(function(element) {
+            element.hide();
+        });
     },
     
     setupWrapper: function() {
+        var element = this.element;
+        
+        this.hiddenElements = [];
+        while (element) {
+            if (element.style && element.style.display == "none") {
+                this.hiddenElements.push(element);
+                $(element).show();
+            }
+            
+            element = element.parentNode;
+        }
+        
         this.wrapper = new Element("div");
         
         if (this.parent.options.zoomable) {
