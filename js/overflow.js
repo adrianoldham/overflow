@@ -214,8 +214,8 @@ Overflow.Scrollable = Class.create({
         
         this.dragging = true;
         
-        $(document.body).onselectstart = function () { return false; }
-        $(document.body).onmousedown   = function () { return false; }
+        $(document.body).onselectstart = function () { return false; };
+        $(document.body).onmousedown   = function () { return false; };
     },
     
     scrollWidgetDragging: function(event) {
@@ -231,8 +231,8 @@ Overflow.Scrollable = Class.create({
         this.startScrollOffset = null;
         this.dragging = false;
         
-        $(document.body).onselectstart = function () { return true; }
-        $(document.body).onmousedown   = function () { return true; }
+        $(document.body).onselectstart = function () { return true; };
+        $(document.body).onmousedown   = function () { return true; };
     },
     
     scrollWheel: function(event) {
