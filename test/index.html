@@ -8,6 +8,7 @@
 	<script src="../lib/prototype.js" type="text/javascript" charset="utf-8"></script>
     <script src="../lib/scriptaculous.js?load=effects" type="text/javascript" charset="utf-8"></script>
 	<script src="../js/overflow.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../js/fontsizer.js" type="text/javascript" charset="utf-8"></script>
 	
 	<style type="text/css" media="screen">
 		.scroll-bar {
@@ -107,6 +108,19 @@
 				widgetOffsets: { top: 16, bottom: 16 }, //tweaking values (this is used to tweak the position of the widget)
 				scrollBarPadding: { top: 10, bottom: 10 } //tweaking values (this is used to tweak the height of the scrollbar when using height: 100% in the css)
 			});
+			
+			overflow.recalculateHeight();
+			overflow.recalculateHeight();
+			//overflow.recalculateHeight();
+			
+			if (FontSizer) {
+				var fontSizer = new FontSizer(".scrollable", { 
+					trigger: "onclick", exclude: ".exclude", incrementAmount: 1, decrementAmount: 1, range: [0, 5],
+					onResize: function() {
+						overflow.recalculateHeight();
+					}
+				});
+			}
         }
         Event.observe(window, "load", runTest);
     </script>

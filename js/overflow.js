@@ -14,6 +14,12 @@ var Overflow = Class.create({
                 this.scrollables.push(new Overflow.Scrollable(scrollable, this));
             }
         }.bind(this));
+    },
+    
+    recalculateHeight: function() {
+        this.scrollables.each(function(scrollable) {
+            scrollable.recalculateHeight(null, true);
+        }.bind(this));
     }
 });
 
@@ -30,23 +36,6 @@ Overflow.Scrollable = Class.create({
         this.setupWrapper();
         this.setupScrollBar();
 
-        this.max = {};
-        
-        this.scrollBar.setStyle({
-            height: this.scrollBar.getHeight() - this.parent.options.scrollBarPadding.top - this.parent.options.scrollBarPadding.bottom + "px" 
-        });
-        
-        // Get the maximum scrolling positions for the element
-        this.max.element = { 
-            x: this.element.scrollWidth - this.element.getWidth(),
-            y: this.element.scrollHeight - this.element.getHeight()
-        };
-        
-        // Get the maximum moving positions for the scrollbar
-        this.max.scrollbar = {
-            y: this.scrollBar.getHeight() - this.scrollWidget.getHeight() - this.parent.options.widgetOffsets.top - this.parent.options.widgetOffsets.bottom
-        };
-        
         this.updateScrollWidget();
         
         if (this.parent.options.zoomable) {
@@ -127,14 +116,55 @@ Overflow.Scrollable = Class.create({
         this.upButton = this.scrollBar.getElementsBySelector("." + this.parent.options.upButtonClass).first();
         this.downButton = this.scrollBar.getElementsBySelector("." + this.parent.options.downButtonClass).first();
         
-        this.upButton.observe("mousedown", this.keyScrollStart.bindAsEventListener(this));
-        this.upButton.observe("mouseup", this.keyScrollStop.bindAsEventListener(this));
+        if (this.updateButton) {
+            this.upButton.observe("mousedown", this.keyScrollStart.bindAsEventListener(this));
+            this.upButton.observe("mouseup", this.keyScrollStop.bindAsEventListener(this));
+            this.upButton.style.cursor = "pointer";
+        }
         
-        this.downButton.observe("mousedown", this.keyScrollStart.bindAsEventListener(this));
-        this.downButton.observe("mouseup", this.keyScrollStop.bindAsEventListener(this));
+        if (this.downButton) {
+            this.downButton.observe("mousedown", this.keyScrollStart.bindAsEventListener(this));
+            this.downButton.observe("mouseup", this.keyScrollStop.bindAsEventListener(this));
+            this.downButton.style.cursor = "pointer";
+        }
+    },
+    
+    recalculateHeight: function(calculateWidth, resizeWidget) {
+        if (this.element.scrollHeight - this.element.getHeight() <= 0) {
+            this.scrollBar.hide();
+        } else {
+            this.scrollBar.show();            
+            
+            if (calculateWidth) {
+                ["paddingLeft", "paddingRight", "paddingTop", "paddingBottom"].each(function (p) {
+                    this.element.style[p] = parseInt(this.element.getStyle(p)) + this.parent.options.padding[p.substring(7).toLowerCase()] + "px";            
+                }.bind(this));
+
+                this.element.style.width = parseInt(this.element.getStyle("width")) - this.parent.options.padding.right - this.parent.options.padding.left + "px";
+            }
+        }
         
-        this.upButton.style.cursor = "pointer";
-        this.downButton.style.cursor = "pointer";
+        // obtain the page to whole scrollable area ratio
+        this.pageRatio = this.element.getHeight() / this.element.scrollHeight;
+        
+        // setup scroll widget (if no height set, then calculate height)
+        if (this.scrollWidget.getHeight() == 0 || resizeWidget)
+            this.scrollWidget.setStyle({ height: this.scrollBar.getHeight() * this.pageRatio + "px" });
+
+        this.scrollWidget.setStyle({ height: this.scrollWidget.getHeight() - this.parent.options.widgetOffsets.top - this.parent.options.widgetOffsets.bottom + "px"});
+
+        this.max = {};
+        
+        // Get the maximum scrolling positions for the element
+        this.max.element = { 
+            x: this.element.scrollWidth - this.element.getWidth(),
+            y: this.element.scrollHeight - this.element.getHeight()
+        };
+        
+        // Get the maximum moving positions for the scrollbar
+        this.max.scrollbar = {
+            y: this.scrollBar.getHeight() - this.scrollWidget.getHeight() - this.parent.options.widgetOffsets.top - this.parent.options.widgetOffsets.bottom
+        };
     },
     
     setupScrollBar: function() {
@@ -148,26 +178,12 @@ Overflow.Scrollable = Class.create({
         this.scrollBar.appendChild(this.scrollWidget);
         this.wrapper.appendChild(this.scrollBar);
         
-        if (this.element.scrollHeight - this.element.getHeight() <= 0) {
-            this.scrollBar.hide();
-        } else {
-            ["paddingLeft", "paddingRight", "paddingTop", "paddingBottom"].each(function (p) {
-                this.element.style[p] = parseInt(this.element.getStyle(p)) + this.parent.options.padding[p.substring(7).toLowerCase()] + "px";            
-            }.bind(this));
-            
-            this.element.style.width = parseInt(this.element.getStyle("width")) - this.parent.options.padding.right - this.parent.options.padding.left + "px";
-        }
+        this.scrollBar.setStyle({
+            height: this.scrollBar.getHeight() - this.parent.options.scrollBarPadding.top - this.parent.options.scrollBarPadding.bottom + "px" 
+        });
         
-        // obtain the page to whole scrollable area ratio
-        this.pageRatio = this.element.getHeight() / this.element.scrollHeight;
-        
+        this.recalculateHeight(true);
         this.scrollBar.observe("click", this.scrollBarClick.bindAsEventListener(this));
-        
-        // setup scroll widget (if no height set, then calculate height)
-        if (this.scrollWidget.getHeight() == 0)
-            this.scrollWidget.setStyle({ height: this.scrollBar.getHeight() * this.pageRatio + "px" });
-            
-        this.scrollWidget.setStyle({ height: this.scrollWidget.getHeight() - this.parent.options.widgetOffsets.top - this.parent.options.widgetOffsets.bottom + "px"});
         
         this.scrollWidget.observe("mousedown", this.scrollWidgetStartDrag.bindAsEventListener(this));
         $(document).observe("mousemove", this.scrollWidgetDragging.bindAsEventListener(this));
