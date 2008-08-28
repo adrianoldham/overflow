@@ -165,6 +165,9 @@ Overflow.Scrollable = Class.create({
         this.max.scrollbar = {
             y: this.scrollBar.getHeight() - this.scrollWidget.getHeight() - this.parent.options.widgetOffsets.top - this.parent.options.widgetOffsets.bottom
         };
+        
+        if (this.element.scrollTop > this.max.element.y) this.element.scrollTop = this.max.element.y;
+        this.updateScrollWidget();
     },
     
     setupScrollBar: function() {
