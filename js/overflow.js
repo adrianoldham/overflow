@@ -148,7 +148,7 @@ Overflow.Scrollable = Class.create({
         this.pageRatio = this.element.getHeight() / this.element.scrollHeight;
         
         // setup scroll widget (if no height set, then calculate height)
-        if (this.scrollWidget.getHeight() == 0 || resizeWidget)
+        if (this.resizableWidget)
             this.scrollWidget.setStyle({ height: this.scrollBar.getHeight() * this.pageRatio + "px" });
 
         this.scrollWidget.setStyle({ height: this.scrollWidget.getHeight() - this.parent.options.widgetOffsets.top - this.parent.options.widgetOffsets.bottom + "px"});
@@ -177,6 +177,7 @@ Overflow.Scrollable = Class.create({
         
         this.scrollWidget = this.parent.options.scrollWidget.cloneNode(true);
         this.scrollWidget.show();
+        this.resizableWidget = (this.scrollWidget.getStyle("height") == null);
 
         this.scrollBar.appendChild(this.scrollWidget);
         this.wrapper.appendChild(this.scrollBar);
@@ -230,7 +231,6 @@ Overflow.Scrollable = Class.create({
     
     scrollWidgetStartDrag: function(event) {
         this.startScrollOffset = event.pageY - this.scrollWidget.cumulativeOffset()[1];
-        
         this.dragging = true;
         
         $(document.body).onselectstart = function () { return false; };
@@ -239,7 +239,7 @@ Overflow.Scrollable = Class.create({
     
     scrollWidgetDragging: function(event) {
         if (!this.dragging) return;
-        
+            
         var scrollToPosition = (event.pageY - this.scrollBar.cumulativeOffset()[1] - this.startScrollOffset) * 
             (this.max.element.y / this.max.scrollbar.y);
         
