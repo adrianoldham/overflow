@@ -116,7 +116,7 @@ Overflow.Scrollable = Class.create({
         this.upButton = this.scrollBar.getElementsBySelector("." + this.parent.options.upButtonClass).first();
         this.downButton = this.scrollBar.getElementsBySelector("." + this.parent.options.downButtonClass).first();
         
-        if (this.updateButton) {
+        if (this.upButton) {
             this.upButton.observe("mousedown", this.keyScrollStart.bindAsEventListener(this));
             this.upButton.observe("mouseup", this.keyScrollStop.bindAsEventListener(this));
             this.upButton.style.cursor = "pointer";
