@@ -130,29 +130,50 @@ Overflow.Scrollable = Class.create({
     },
     
     recalculateHeight: function(calculateWidth, resizeWidget) {
+        var hidden = [];
+        var element = this.element;
+        while (true) {
+            if (element == null) break;
+
+            if (element.style && element.style.display == "none") {
+                hidden.push(element);
+                element.show();
+            }
+            element = $(element.parentNode);
+        }
+        
+        if (this.originalPadding == null) this.originalPadding = {};
+
         if (this.element.scrollHeight - this.element.getHeight() <= 0) {
             this.scrollBar.hide();
+            
+            ["paddingLeft", "paddingRight", "paddingTop", "paddingBottom"].each(function (p) {
+                if (this.originalPadding[p] == null) return;
+                this.element.style[p] = this.originalPadding[p] + "px";            
+            }.bind(this));
+            
+            if (this.originalWidth) this.element.style.width = this.originalWidth + "px";
         } else {
             this.scrollBar.show();            
-            
-            if (calculateWidth) {
-                ["paddingLeft", "paddingRight", "paddingTop", "paddingBottom"].each(function (p) {
-                    this.element.style[p] = parseInt(this.element.getStyle(p)) + this.parent.options.padding[p.substring(7).toLowerCase()] + "px";            
-                }.bind(this));
 
-                this.element.style.width = parseInt(this.element.getStyle("width")) - this.parent.options.padding.right - this.parent.options.padding.left + "px";
-            }
+            ["paddingLeft", "paddingRight", "paddingTop", "paddingBottom"].each(function (p) {
+                if (this.originalPadding[p] == null) this.originalPadding[p] = parseInt(this.element.getStyle(p));
+                this.element.style[p] = this.originalPadding[p] + this.parent.options.padding[p.substring(7).toLowerCase()] + "px";            
+            }.bind(this));
+
+            if (this.originalWidth == null) this.originalWidth = parseInt(this.element.getStyle("width"));
+            this.element.style.width = this.originalWidth - this.parent.options.padding.right - this.parent.options.padding.left + "px";
         }
         
         // obtain the page to whole scrollable area ratio
         this.pageRatio = this.element.getHeight() / this.element.scrollHeight;
         
         // setup scroll widget (if no height set, then calculate height)
-        if (this.resizableWidget)
+        /*if (this.resizableWidget)
             this.scrollWidget.setStyle({ height: this.scrollBar.getHeight() * this.pageRatio + "px" });
-
+        
         this.scrollWidget.setStyle({ height: this.scrollWidget.getHeight() - this.parent.options.widgetOffsets.top - this.parent.options.widgetOffsets.bottom + "px"});
-
+        */
         this.max = {};
         
         // Get the maximum scrolling positions for the element
@@ -168,6 +189,10 @@ Overflow.Scrollable = Class.create({
         
         if (this.element.scrollTop > this.max.element.y) this.element.scrollTop = this.max.element.y;
         this.updateScrollWidget();
+        
+        hidden.each(function (el) {
+            el.hide();
+        });
     },
     
     setupScrollBar: function() {
