@@ -322,9 +322,10 @@ Overflow.Scrollable = Class.create({
     updateScrollWidget: function() {        
         this.scrollRatio = this.element.scrollTop / this.max.element.y;
         
-        this.scrollWidget.setStyle({
-            top: this.scrollRatio * this.max.scrollbar.y + this.parent.options.widgetOffsets.top + "px"
-        });
+        var temp = this.scrollRatio * this.max.scrollbar.y + this.parent.options.widgetOffsets.top;
+        if (isNaN(temp)) temp = 0;
+        
+        this.scrollWidget.style.top = temp + "px";
     }
 });
 
