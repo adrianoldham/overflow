@@ -140,7 +140,7 @@ Overflow.Scrollable = Class.create({
     
     recalculateHeight: function(calculateWidth, resizeWidget) {
         var element = this.element;
-        var hidden = this.memoryShowElement(element)
+        var hidden = this.memoryShowElement(element);
         
         if (this.originalPadding == null) this.originalPadding = {};
 
