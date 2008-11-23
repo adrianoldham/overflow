@@ -100,13 +100,17 @@
 	</div>
     <script type="text/javascript" charset="utf-8">
         function runTest() {
-            var overflow = new Overflow("div", { 
+			$$('div.scrollable').each(function(div) {div.hide();});
+			
+            var overflow = new Overflow("div.scrollable", { 
 				scrollBar: $('genericScrollBar'),
 				scrollWidget: $('genericScrollWidget'),
     			padding: { top: 0, bottom: 0, left: 0, right: 40 },
 				widgetOffsets: { top: 16, bottom: 16 }, //tweaking values (this is used to tweak the position of the widget)
 				scrollBarPadding: { top: 10, bottom: 10 } //tweaking values (this is used to tweak the height of the scrollbar when using height: 100% in the css)
 			});
+			
+			$$('div.scrollable').each(function(div) {div.show();});
 			
 			if (FontSizer) {
 				var fontSizer = new FontSizer(".scrollable", { 
