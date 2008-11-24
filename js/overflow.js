@@ -199,11 +199,31 @@ Overflow.Scrollable = Class.create({
     
     setupScrollBar: function() {
         // construct the scroll bar and inject it into the dom
-        this.scrollBar = this.parent.options.scrollBar.cloneNode(true);
-        this.scrollBar.show();
+        if (this.parent.options.scrollBar == null) {
+            var scrollBarTop = new Element("div", { 'class': this.parent.options.scrollBarTopClass });
+            var scrollBarBottom = new Element("div", { 'class': this.parent.options.scrollBarBottomClass });
+            
+            this.scrollBar = new Element("div", { 'class': this.parent.options.scrollBarClass });
+            
+            this.scrollBar.appendChild(scrollBarTop);
+            this.scrollBar.appendChild(scrollBarBottom);
+        } else {
+            this.scrollBar = this.parent.options.scrollBar.cloneNode(true);            
+            this.scrollBar.show();
+        }
         
-        this.scrollWidget = this.parent.options.scrollWidget.cloneNode(true);
-        this.scrollWidget.show();
+        if (this.parent.options.scrollWidget == null) {
+            var scrollWidgetTop = new Element("div", { 'class': this.parent.options.scrollWidgetTopClass });
+            var scrollWidgetBottom = new Element("div", { 'class': this.parent.options.scrollWidgetBottomClass });
+            
+            this.scrollWidget = new Element("div", { 'class': this.parent.options.scrollWidgetClass });
+            
+            this.scrollWidget.appendChild(scrollWidgetTop);
+            this.scrollWidget.appendChild(scrollWidgetBottom);
+        } else {
+            this.scrollWidget = this.parent.options.scrollWidget.cloneNode(true);
+            this.scrollWidget.show();
+        }
         
         var height = this.scrollWidget.getStyle("height");
         
@@ -348,6 +368,12 @@ Overflow.DefaultOptions = {
     keyScrollAmount: 20,
     upButtonClass: "up-button",
     downButtonClass: "down-button",
+    scrollBarClass: "scroll-bar",
+    scrollBarTopClass: "scroll-bar-top",
+    scrollBarBottomClass: "scroll-bar-bottom",
+    scrollWidgetClass: "scroll-widget",
+    scrollWidgetTopClass: "scroll-widget-top",
+    scrollWidgetBottomClass: "scroll-widget-bottom",
     // used to integrate with HTML zoomer
     zoomable: false
 };

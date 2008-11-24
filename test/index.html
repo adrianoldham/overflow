@@ -78,16 +78,6 @@
 </head>
 
 <body>
-	<div id="genericScrollBar" class="scroll-bar" style="display: none">
-		<div class="scroll-bar-top"></div>
-		<div class="scroll-bar-bottom"></div>
-	</div>
-	
-	<div id="genericScrollWidget" class="scroll-widget" style="display: none">
-		<div class="scroll-widget-top"></div>
-		<div class="scroll-widget-bottom"></div>
-	</div>
-	
 	<div class="scrollable">
 		Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation 
 	</div>
@@ -106,8 +96,6 @@
 			$$('div.scrollable').each(function(div) {div.hide();});
 			
             var overflow = new Overflow("div.scrollable", { 
-				scrollBar: $('genericScrollBar'),
-				scrollWidget: $('genericScrollWidget'),
     			padding: { top: 0, bottom: 0, left: 0, right: 40 },
 				widgetOffsets: { top: 16, bottom: 16 }, //tweaking values (this is used to tweak the position of the widget)
 				scrollBarPadding: { top: 10, bottom: 10 } //tweaking values (this is used to tweak the height of the scrollbar when using height: 100% in the css)
