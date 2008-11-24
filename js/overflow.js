@@ -200,9 +200,15 @@ Overflow.Scrollable = Class.create({
         if (this.parent.options.scrollBar == null) {
             var scrollBarTop = new Element("div", { 'class': this.parent.options.scrollBarTopClass });
             var scrollBarBottom = new Element("div", { 'class': this.parent.options.scrollBarBottomClass });
+
+            var upButton = new Element("div", { 'class': this.parent.options.upButtonClass });
+            var downButton = new Element("div", { 'class': this.parent.options.downButtonClass });
             
             this.scrollBar = new Element("div", { 'class': this.parent.options.scrollBarClass });
             
+            this.scrollBar.appendChild(upButton);
+            this.scrollBar.appendChild(downButton);
+
             this.scrollBar.appendChild(scrollBarTop);
             this.scrollBar.appendChild(scrollBarBottom);
         } else {
@@ -364,8 +370,8 @@ Overflow.DefaultOptions = {
     scrollWheelSensitivity: 10,
     padding: { top: 0, bottom: 0, left: 0, right: 0 },
     keyScrollAmount: 20,
-    upButtonClass: "up-button",
-    downButtonClass: "down-button",
+    upButtonClass: "scroll-button-up",
+    downButtonClass: "scroll-button-down",
     scrollBarClass: "scroll-bar",
     scrollBarTopClass: "scroll-bar-top",
     scrollBarBottomClass: "scroll-bar-bottom",
