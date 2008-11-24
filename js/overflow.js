@@ -85,15 +85,13 @@ Overflow.Scrollable = Class.create({
         });
                 
         // use the correct margins for wrapper and remove them from the element
-        for (var p in this.element.getStyles()) {
-            if (p.indexOf("margin") != -1) {
-                var styles = {}; styles[p] = this.element.getStyle(p);
-                var removeStyles = {}; removeStyles[p] = "0";
-                
-                this.wrapper.setStyle(styles);
-                this.element.setStyle(removeStyles);
-            }
-        }
+        $A(["margin", "marginLeft", "marginRight", "marginBottom", "marginTop"]).each(function(p) {
+            var styles = {}; styles[p] = this.element.getStyle(p);
+            var removeStyles = {}; removeStyles[p] = "0";
+            
+            this.wrapper.setStyle(styles);
+            this.element.setStyle(removeStyles);            
+        }.bind(this));
         
         this.element.parentNode.insertBefore(this.wrapper, this.element);
         this.wrapper.appendChild(this.element);
@@ -227,7 +225,7 @@ Overflow.Scrollable = Class.create({
         
         var height = this.scrollWidget.getStyle("height");
         
-        this.resizableWidget = (height == null || height == "");
+        this.resizableWidget = (height == null || height == "" || height == "0px");
 
         this.scrollBar.appendChild(this.scrollWidget);
         this.wrapper.appendChild(this.scrollBar);
