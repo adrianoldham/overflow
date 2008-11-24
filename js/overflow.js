@@ -204,7 +204,10 @@ Overflow.Scrollable = Class.create({
         
         this.scrollWidget = this.parent.options.scrollWidget.cloneNode(true);
         this.scrollWidget.show();
-        this.resizableWidget = (this.scrollWidget.getStyle("height") == null);
+        
+        var height = this.scrollWidget.getStyle("height");
+        
+        this.resizableWidget = (height == null || height == "");
 
         this.scrollBar.appendChild(this.scrollWidget);
         this.wrapper.appendChild(this.scrollBar);
@@ -270,8 +273,8 @@ Overflow.Scrollable = Class.create({
     
     scrollWidgetDragging: function(event) {
         if (!this.dragging) return;
-            
-        var scrollToPosition = (event.pageY - this.scrollBar.cumulativeOffset()[1] - this.startScrollOffset) * 
+        
+        var scrollToPosition = (event.pageY - this.scrollBar.cumulativeOffset()[1] - this.startScrollOffset - this.parent.options.widgetOffsets.top) * 
             (this.max.element.y / this.max.scrollbar.y);
         
         this.scrollTo(scrollToPosition);
