@@ -85,7 +85,7 @@ Overflow.Scrollable = Class.create({
         });
                 
         // use the correct margins for wrapper and remove them from the element
-        $A(["margin", "marginLeft", "marginRight", "marginBottom", "marginTop"]).each(function(p) {
+        $A(["marginLeft", "marginRight", "marginBottom", "marginTop"]).each(function(p) {
             var styles = {}; styles[p] = this.element.getStyle(p);
             var removeStyles = {}; removeStyles[p] = "0";
             
