@@ -44,7 +44,34 @@ Overflow.Scrollable = Class.create({
         
         this.setupButtons();
         
+        // Perform the focus check (initial setup and focus)
+        this.setupFocusCheck();
+        
         this.memoryHideElement(this.hiddenElements);
+    },
+    
+    // This will focus on the given element
+    focusOn: function(element) {
+        var elementOffset = element.cumulativeOffset();
+        var overflowOffset = this.element.cumulativeOffset();
+        
+        this.scrollTo(elementOffset.top - overflowOffset.top);
+    },
+    
+    setupFocusCheck: function() {
+        // Find the focus check elements, and do an initial focus class check
+        this.focusCheckElements = this.element.select(this.parent.options.focusCheckSelector);
+        
+        this.focusCheckElements.each(function(focusCheckElement) {
+            if (focusCheckElement.hasClassName(this.parent.options.focusCheckClass)) {
+                this.focusOn(focusCheckElement);
+            }
+            
+            // Observe custom event for firing the focus checker (outside of overflow)
+            focusCheckElement.observe("overflow:focus", function(event) {
+                this.focusOn(event.target);            
+            }.bindAsEventListener(this));
+        }.bind(this));
     },
     
     setupWrapper: function() {
@@ -379,7 +406,13 @@ Overflow.DefaultOptions = {
     scrollWidgetTopClass: "scroll-widget-top",
     scrollWidgetBottomClass: "scroll-widget-bottom",
     // used to integrate with HTML zoomer
-    zoomable: false
+    zoomable: false,
+    
+    // This selector defines which elements inside the
+    // overflow should be used to check for focus
+    // (so we can scroll to it if it's focused)
+    focusCheckSelector: "",
+    focusCheckClass: "focus" // If the element found with the above focusCheckSelector has this class, then it means its focused
 };
 
 // if scrollbar height is set, then use that

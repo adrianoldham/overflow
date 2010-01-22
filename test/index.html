@@ -74,6 +74,14 @@
 			height: 200px;
 			margin: 20px;
 		}
+		
+		li {
+		    margin: 20px 0;
+		}
+		
+		li.focus {
+		    font-weight: bold;
+		}
 	</style>
 </head>
 
@@ -89,13 +97,52 @@
 		</p>
 	</div>
 	
+	<h2>Initial Focus Check Test</h2>
+	<div class="scrollable" style="height: 150px; width: 300px">
+		<ul>
+		    <li>Element 1</li>
+		    <li>Element 2</li>
+		    <li>Element 3</li>
+		    <li>Element 4</li>
+		    <li>Element 5</li>
+		    <li>Element 6</li>
+		    <li>Element 7</li>
+		    <li class="focus">Element 8</li>
+		    <li>Element 9</li>
+		    <li>Element 10</li>
+		    <li>Element 11</li>
+		    <li>Element 12</li>
+		</ul>
+	</div>
+	
+	<h2>Custom Event Focus Check Test (used by other scripts to make Overflow focus on a particular element)</h2>
+	<div class="scrollable" style="height: 150px; width: 300px">
+		<ul>
+		    <li>Element 1</li>
+		    <li>Element 2</li>
+		    <li>Element 3</li>
+		    <li>Element 4</li>
+		    <li>Element 5</li>
+		    <li>Element 6</li>
+		    <li>Element 7</li>
+		    <li>Element 8</li>
+		    <li>Element 9</li>
+		    <li>Element 10</li>
+		    <li id="eventFocusMe">Element 11 (This element is focused using the custom prototype event)</li>
+		    <li>Element 12</li>
+		</ul>
+	</div>
+	
 	<div id="test">
-		</div>
+	</div>
     <script type="text/javascript" charset="utf-8">
         function runTest() {
 			$$('div.scrollable').each(function(div) {div.hide();});
 			
             var overflow = new Overflow("div.scrollable", { 
+                focusCheckSelector: "li", // this selector is relative to the overflow element
+                focusCheckClass: "focus", // the class to look for initially (so the element we should focus on has this class)
+                
     			padding: { top: 0, bottom: 0, left: 0, right: 40 },
 				widgetOffsets: { top: 16, bottom: 16 }, //tweaking values (this is used to tweak the position of the widget)
 				scrollBarPadding: { top: 10, bottom: 10 } //tweaking values (this is used to tweak the height of the scrollbar when using height: 100% in the css)
@@ -103,14 +150,25 @@
 			
 			$$('div.scrollable').each(function(div) {div.show();});
 			
-			if (FontSizer) {
+			// Here we test a custom event called overflow:focus
+			// This makes overflow focus to the element that fired it
+			$('eventFocusMe').fire('overflow:focus');
+			
+			// Example fixed panorama usage below:
+			/*
+			fixedPanorama.addFocusEvent(function(element) { 
+                element.fire('overflow:focus');   
+			});
+			*/
+			
+			/*if (FontSizer) {
 				var fontSizer = new FontSizer(".scrollable", { 
 					trigger: "onclick", exclude: ".exclude", incrementAmount: 1, decrementAmount: 1, range: [0, 5],
 					onResize: function() {
 						overflow.recalculateHeight();
 					}
 				});
-			}
+			}*/
         }
         Event.observe(window, "load", runTest);
     </script>
