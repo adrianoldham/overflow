@@ -52,10 +52,28 @@ Overflow.Scrollable = Class.create({
     
     // This will focus on the given element
     focusOn: function(element) {
-        var elementOffset = element.cumulativeOffset();
         var overflowOffset = this.element.cumulativeOffset();
+        var overflowHeight = this.element.getHeight();
         
-        this.scrollTo(elementOffset.top - overflowOffset.top);
+        // Find element bounds
+        var elementOffset = element.cumulativeOffset();
+        var elementTop = elementOffset.top - overflowOffset.top;
+        var elementBottom = elementTop + element.getHeight();
+        
+        // Find scrollTop and scrollBottom
+        var scrollTop = this.element.scrollTop;
+        var scrollBottom = scrollTop + overflowHeight;
+        
+        // If not visible...
+        var scrollTo;
+        if (elementTop < scrollTop) scrollTo = elementTop;
+        if (elementBottom > scrollBottom) scrollTo = elementBottom - overflowHeight;
+        
+        console.log(elementTop)
+        
+        if (scrollTo != null) {
+            this.scrollTo(scrollTo);   
+        }
     },
     
     setupFocusCheck: function() {

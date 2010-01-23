@@ -120,7 +120,7 @@
 		<ul>
 		    <li>Element 1</li>
 		    <li>Element 2</li>
-		    <li>Element 3</li>
+		    <li id="eventFocusMe2">Element 3</li>
 		    <li>Element 4</li>
 		    <li>Element 5</li>
 		    <li>Element 6</li>
@@ -153,6 +153,7 @@
 			// Here we test a custom event called overflow:focus
 			// This makes overflow focus to the element that fired it
 			$('eventFocusMe').fire('overflow:focus');
+			$('eventFocusMe2').fire('overflow:focus');
 			
 			// Example fixed panorama usage below:
 			/*
