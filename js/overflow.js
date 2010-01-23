@@ -69,8 +69,6 @@ Overflow.Scrollable = Class.create({
         if (elementTop < scrollTop) scrollTo = elementTop;
         if (elementBottom > scrollBottom) scrollTo = elementBottom - overflowHeight;
         
-        console.log(elementTop)
-        
         if (scrollTo != null) {
             this.scrollTo(scrollTo);   
         }
