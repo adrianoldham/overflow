@@ -48,8 +48,6 @@ Overflow.Scrollable = Class.create({
         this.setupFocusCheck();
         
         this.memoryHideElement(this.hiddenElements);
-
-		this.recalculateHeight();
     },
     
     // This will focus on the given element
@@ -97,6 +95,10 @@ Overflow.Scrollable = Class.create({
         this.hiddenElements = this.memoryShowElement(element);
         
         this.wrapper = new Element("div");
+        this.wrapper.setStyle({
+            overflow: 'hidden',
+            position: 'relative'
+        });
         
         if (this.parent.options.zoomable) {
             this.wrapper.id = this.element.id;
@@ -122,26 +124,93 @@ Overflow.Scrollable = Class.create({
                 border: "none"
             });
         }
-
-        this.wrapper.setStyle({
-            position: "relative",
-            width: this.element.getWidth() + "px",
-            height: this.element.getHeight() + "px"
-        });
-                
+        
         // use the correct margins for wrapper and remove them from the element
         $A(["marginLeft", "marginRight", "marginBottom", "marginTop"]).each(function(p) {
             var styles = {}; styles[p] = this.element.getStyle(p);
             var removeStyles = {}; removeStyles[p] = "0";
-            
             this.wrapper.setStyle(styles);
             this.element.setStyle(removeStyles);            
         }.bind(this));
-        
+
         this.element.parentNode.insertBefore(this.wrapper, this.element);
         this.wrapper.appendChild(this.element);
         
         this.element.setStyle({ overflow: "hidden" });
+    },
+    
+    updateWrapperVisibility: function() {  
+        if (this.element.getStyle('display') == 'none') {
+            this.wrapper.setStyle({
+                height: 0
+            });
+        }
+    },
+    
+    updateWrapperSize: function() {
+        this.wrapper.setStyle({
+            width: this.element.getWidth() + "px",
+            height: this.element.getHeight() + "px"
+        });
+        
+        this.updateWrapperVisibility();
+    },
+    
+    updateElementSize: function() {
+        if (this.originalPadding == null) this.originalPadding = {};
+
+        if (this.element.scrollHeight - this.element.getHeight() <= 0) {
+            if (this.scrollBar) this.scrollBar.hide();
+            
+            ["paddingLeft", "paddingRight", "paddingTop", "paddingBottom"].each(function (p) {
+                if (this.originalPadding[p] == null) return;
+                this.element.style[p] = this.originalPadding[p] + "px";            
+            }.bind(this));
+            
+            if (this.originalWidth) this.element.style.width = this.originalWidth + "px";
+        } else {
+            if (this.scrollBar) this.scrollBar.show();            
+
+            if (this.originalWidth == null) this.originalWidth = parseInt(this.element.getStyle("width"));
+            this.element.style.width = this.originalWidth - this.parent.options.padding.right - this.parent.options.padding.left + "px";
+
+            ["paddingLeft", "paddingRight", "paddingTop", "paddingBottom"].each(function (p) {
+                if (this.originalPadding[p] == null) this.originalPadding[p] = parseInt(this.element.getStyle(p));
+                this.element.style[p] = this.originalPadding[p] + this.parent.options.padding[p.substring(7).toLowerCase()] + "px";            
+            }.bind(this));
+
+        }
+    },
+    
+    updateScrollBarSize: function() {
+        // obtain the page to whole scrollable area ratio
+        this.pageRatio = this.element.getHeight() / this.element.scrollHeight;
+        
+        var widgetHidden = this.memoryShowElement(this.scrollWidget);
+        
+        // setup scroll widget (if no height set, then calculate height)
+        if (this.resizableWidget)
+            this.scrollWidget.setStyle({ height: this.scrollBar.getHeight() * this.pageRatio + "px" });
+        
+        this.scrollWidget.setStyle({ height: this.scrollWidget.getHeight() - this.parent.options.widgetOffsets.top - this.parent.options.widgetOffsets.bottom + "px"});
+
+        this.memoryHideElement(widgetHidden);
+        
+        this.max = {};
+
+        // Get the maximum scrolling positions for the element
+        this.max.element = { 
+            x: this.element.scrollWidth - this.element.getWidth(),
+            y: this.element.scrollHeight - this.element.getHeight()
+        };
+        
+        // Get the maximum moving positions for the scrollbar
+        this.max.scrollbar = {
+            y: this.scrollBar.getHeight() - this.scrollWidget.getHeight() - this.parent.options.widgetOffsets.top - this.parent.options.widgetOffsets.bottom
+        };
+        
+        if (this.element.scrollTop > this.max.element.y) this.element.scrollTop = this.max.element.y;
+        this.updateScrollWidget();
     },
     
     setupButtons: function() {
@@ -185,71 +254,12 @@ Overflow.Scrollable = Class.create({
         var element = this.element;
         var hidden = this.memoryShowElement(element);
         
-        if (this.originalPadding == null) this.originalPadding = {};
-
-        if (this.element.scrollHeight - this.element.getHeight() <= 0) {
-            this.scrollBar.hide();
-            
-            ["paddingLeft", "paddingRight", "paddingTop", "paddingBottom"].each(function (p) {
-                if (this.originalPadding[p] == null) return;
-                this.element.style[p] = this.originalPadding[p] + "px";            
-            }.bind(this));
-            
-            if (this.originalWidth) this.element.style.width = this.originalWidth + "px";
-        } else {
-            this.scrollBar.show();            
-
-            ["paddingLeft", "paddingRight", "paddingTop", "paddingBottom"].each(function (p) {
-                if (this.originalPadding[p] == null) this.originalPadding[p] = parseInt(this.element.getStyle(p));
-                this.element.style[p] = this.originalPadding[p] + this.parent.options.padding[p.substring(7).toLowerCase()] + "px";            
-            }.bind(this));
-
-            if (this.originalWidth == null) this.originalWidth = parseInt(this.element.getStyle("width"));
-            this.element.style.width = this.originalWidth - this.parent.options.padding.right - this.parent.options.padding.left + "px";
-        }
-        
-        // obtain the page to whole scrollable area ratio
-        this.pageRatio = this.element.getHeight() / this.element.scrollHeight;
-        
-        var widgetHidden = this.memoryShowElement(this.scrollWidget);
-        
-        // setup scroll widget (if no height set, then calculate height)
-        if (this.resizableWidget)
-            this.scrollWidget.setStyle({ height: this.scrollBar.getHeight() * this.pageRatio + "px" });
-        
-        this.scrollWidget.setStyle({ height: this.scrollWidget.getHeight() - this.parent.options.widgetOffsets.top - this.parent.options.widgetOffsets.bottom + "px"});
-        
-        this.memoryHideElement(widgetHidden);
-        
-        this.max = {};
-
-        // Get the maximum scrolling positions for the element
-        this.max.element = { 
-            x: this.element.scrollWidth - this.element.getWidth(),
-            y: this.element.scrollHeight - this.element.getHeight()
-        };
-        
-        // Get the maximum moving positions for the scrollbar
-        this.max.scrollbar = {
-            y: this.scrollBar.getHeight() - this.scrollWidget.getHeight() - this.parent.options.widgetOffsets.top - this.parent.options.widgetOffsets.bottom
-        };
-        
-        if (this.element.scrollTop > this.max.element.y) this.element.scrollTop = this.max.element.y;
-        this.updateScrollWidget();
+        this.updateElementSize();
+        this.updateScrollBarSize();
         
         this.memoryHideElement(hidden);
-
-		var width = this.element.getWidth();
-		var height = this.element.getHeight();
-		
-		if (this.element.getStyle('display') == 'none') {
-			height = 0;
-		}
-		
-        this.wrapper.setStyle({
-            width: width + "px",
-            height: height + "px"
-        });
+        
+        this.updateWrapperSize();
     },
     
     setupScrollBar: function() {
