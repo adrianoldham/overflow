@@ -48,6 +48,8 @@ Overflow.Scrollable = Class.create({
         this.setupFocusCheck();
         
         this.memoryHideElement(this.hiddenElements);
+
+		this.recalculateHeight();
     },
     
     // This will focus on the given element
@@ -220,7 +222,7 @@ Overflow.Scrollable = Class.create({
         this.memoryHideElement(widgetHidden);
         
         this.max = {};
-        
+
         // Get the maximum scrolling positions for the element
         this.max.element = { 
             x: this.element.scrollWidth - this.element.getWidth(),
@@ -236,6 +238,18 @@ Overflow.Scrollable = Class.create({
         this.updateScrollWidget();
         
         this.memoryHideElement(hidden);
+
+		var width = this.element.getWidth();
+		var height = this.element.getHeight();
+		
+		if (this.element.getStyle('display') == 'none') {
+			height = 0;
+		}
+		
+        this.wrapper.setStyle({
+            width: width + "px",
+            height: height + "px"
+        });
     },
     
     setupScrollBar: function() {
