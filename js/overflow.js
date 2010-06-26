@@ -48,6 +48,8 @@ Overflow.Scrollable = Class.create({
         this.setupFocusCheck();
         
         this.memoryHideElement(this.hiddenElements);
+        
+        this.updateWrapperVisibility();
     },
     
     // This will focus on the given element
@@ -169,7 +171,7 @@ Overflow.Scrollable = Class.create({
             
             if (this.originalWidth) this.element.style.width = this.originalWidth + "px";
         } else {
-            if (this.scrollBar) this.scrollBar.show();            
+            if (this.scrollBar) this.scrollBar.show();
 
             if (this.originalWidth == null) this.originalWidth = parseInt(this.element.getStyle("width"));
             this.element.style.width = this.originalWidth - this.parent.options.padding.right - this.parent.options.padding.left + "px";
