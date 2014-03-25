@@ -8,7 +8,7 @@
 	<script src="../lib/prototype.js" type="text/javascript" charset="utf-8"></script>
     <script src="../lib/scriptaculous.js?load=effects" type="text/javascript" charset="utf-8"></script>
 	<script src="../js/overflow.js" type="text/javascript" charset="utf-8"></script>
-	<script src="../js/fontsizer.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../fontsizer/js/fontsizer.js" type="text/javascript" charset="utf-8"></script>
 	
 	<style type="text/css" media="screen">
 		.scroll-bar {
@@ -137,8 +137,6 @@
 	</div>
     <script type="text/javascript" charset="utf-8">
         function runTest() {
-			$$('div.scrollable').each(function(div) {div.hide();});
-			
             var overflow = new Overflow("div.scrollable", { 
                 focusCheckSelector: "li", // this selector is relative to the overflow element
                 focusCheckClass: "focus", // the class to look for initially (so the element we should focus on has this class)
@@ -147,8 +145,6 @@
 				widgetOffsets: { top: 16, bottom: 16 }, //tweaking values (this is used to tweak the position of the widget)
 				scrollBarPadding: { top: 10, bottom: 10 } //tweaking values (this is used to tweak the height of the scrollbar when using height: 100% in the css)
 			});
-			
-			$$('div.scrollable').each(function(div) {div.show();});
 			
 			// Here we test a custom event called overflow:focus
 			// This makes overflow focus to the element that fired it
@@ -162,14 +158,14 @@
 			});
 			*/
 			
-			/*if (FontSizer) {
+			if (FontSizer) {
 				var fontSizer = new FontSizer(".scrollable", { 
 					trigger: "onclick", exclude: ".exclude", incrementAmount: 1, decrementAmount: 1, range: [0, 5],
 					onResize: function() {
 						overflow.recalculateHeight();
 					}
 				});
-			}*/
+			}
         }
         Event.observe(window, "load", runTest);
     </script>
